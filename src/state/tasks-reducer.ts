@@ -92,7 +92,7 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
         //     state[action.todolistId] = newTasksArray;
         //     return ({...state});
         // }
-
+// *******************************************************************************************************
         case "UPDATE-TASK": {
             let todolistTasks = state[action.todolistId];
             let newTasksArray = todolistTasks
@@ -102,7 +102,7 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
             state[action.todolistId] = newTasksArray;
             return ({...state});
         }
-
+// *******************************************************************************************************
         // case "CHANGE-TASK-TITLE": {
         //     let todolistTasks = state[action.todolistId];
         //     // найдём нужную таску:
@@ -256,7 +256,7 @@ export const addTaskTC: any = ({title, todolistId}: { title: string, todolistId:
 } */
 //************************************************************************************************************
 // в будущем можем сделать логику по обновлению любого параметра в том числе например description
-// скопируем тип с api -  переименуем UpdateTaskModelType на UpdateDomainTaskModelType - тип с апи не трогаем его не меняем
+// скопируем тип с api -  переименуем UpdateTaskModelType на UpdateDomainTaskModelType - тип с апи не трогаем его - не меняем
 // так как он является характеристикой того как мы взаимодействуем с сервером - а Вы уже делаете свои типы в др файлах на основе моео идеал
 // свойства тут по желанию передаем ?
 

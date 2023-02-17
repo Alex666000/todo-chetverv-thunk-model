@@ -15,11 +15,11 @@ export type AddTaskActionType = {
     task: TaskType
 }
 
-export type ChangeTaskStatusActionType = {
+export type UpdateTaskActionType = {
     type: "UPDATE-TASK",
     todolistId: string
     taskId: string
-    status: TaskStatuses
+    model: UpdateDomainTaskModelType
 }
 
 export type ChangeTaskTitleActionType = {
@@ -35,7 +35,7 @@ export type SetTasksActionType = {
 }
 
 type ActionsType = RemoveTaskActionType | AddTaskActionType
-    | ChangeTaskStatusActionType
+    | UpdateTaskActionType
     | ChangeTaskTitleActionType
     | AddTodolistActionType
     | RemoveTodolistActionType
@@ -82,16 +82,7 @@ export const tasksReducer = (state: TasksStateType = initialState, action: Actio
         case "UPDATE-TASK": {
             let todolistTasks = state[action.todolistId];
             let newTasksArray = todolistTasks
-                .map(t => t.id === action.taskId ? {...t, status: action.status} : t);
-
-            state[action.todolistId] = newTasksArray;
-            return ({...state});
-        }
-        case "CHANGE-TASK-TITLE": {
-            let todolistTasks = state[action.todolistId];
-            // найдём нужную таску:
-            let newTasksArray = todolistTasks
-                .map(t => t.id === action.taskId ? {...t, title: action.title} : t);
+                .map(t => t.id === action.taskId ? {...t, ...action.model} : t);
 
             state[action.todolistId] = newTasksArray;
             return ({...state});
@@ -130,11 +121,8 @@ export const removeTaskAC = (taskId: string, todolistId: string): RemoveTaskActi
 export const addTaskAC = (task: TaskType): AddTaskActionType => {
     return {type: "ADD-TASK", task}
 }
-export const changeTaskStatusAC = (taskId: string, status: TaskStatuses, todolistId: string): ChangeTaskStatusActionType => {
-    return {type: "UPDATE-TASK", status, todolistId, taskId}
-}
-export const changeTaskTitleAC = (taskId: string, title: string, todolistId: string): ChangeTaskTitleActionType => {
-    return {type: "CHANGE-TASK-TITLE", title, todolistId, taskId}
+export const updateTaskAC = (taskId: string, model: UpdateDomainTaskModelType, todolistId: string): UpdateTaskActionType => {
+    return {type: "UPDATE-TASK", model, todolistId, taskId}
 }
 export const setTaksAC = (tasks: TaskType[], todolistId: string): SetTasksActionType => {
     return {type: "SET-TASKS", tasks, todolistId}
@@ -169,79 +157,40 @@ export const addTaskTC: any = ({title, todolistId}: { title: string, todolistId:
 }
 // ***************************************************************************************************************
 // Логика при обновлении данных - put когда используем....
-// 2 ---
-export const changeTaskStatusTC: any = (taskId: string, newStatus: TaskStatuses, todolistId: string) =>
+export type UpdateDomainTaskModelType = {
+    title?: string
+    description?: string
+    status?: TaskStatuses
+    priority?: TaskPriorities
+    startDate?: string
+    deadline?: string
+}
+
+export const updateTaskTC: any = (taskid: string, domainModel: UpdateDomainTaskModelType, todolistId: string) =>
     (dispatch: Dispatch, getState: () => AppRootStateType) => {
         const state = getState()
-        // получаем таски конкретного туду и ищем в них конкретную таску - нам вернется таска и у нее можем скопировать то что надо
-        const task = state.tasks[todolistId].find(task => task.id === taskId)
-        // find может таску и не найти
+        const task = state.tasks[todolistId].find(task => task.id === taskid)
 
-        /* 1 ---
-         const model: UpdateTaskModelType = {
-             title: "",
-             status: TaskStatuses.InProgress,
-             startDate: "",
-             deadline: "",
-             description: "",
-             priority: TaskPriorities.Hi,
-         }*/
-
-        // можно просто написать:
-        /* if (task) {
-             const model: UpdateTaskModelType = {
-                 title: "",
-                 status: TaskStatuses.InProgress,
-                 startDate: "",
-                 deadline: task.deadline,
-                 description: "",
-                 priority: TaskPriorities.Hi,
-             }
-         }*/
-
-        // но мы так сделаем:
         if (!task) {
-            // если таска не найдена - то пользователя оповестим
-            // throw new Error('task not found in the state')
             console.warn("task not found in the state")
-            // оборвем...дальше не пойдем если таски нет
             return
         }
-        const model: UpdateTaskModelType = {
+        const apiModel: UpdateTaskModelType = {
             title: task.title,
-            // статус берем тот который приходит сюда
-            // такая запись означает что переопределили переменную status на newStatus
-            status: newStatus,
+            status: task.status,
             startDate: task.startDate,
             deadline: task.deadline,
             description: task.description,
             priority: task.priority,
         }
-        // после чего таску закидываем в updateTask
 
-        /* если модельку отправим так то статус то поменяем а все остальные свойства на серваке затрем на пустоту так как передаем
-        весь объект со свойствами с пустыми значениями
-        все свойства какие не хотим менять оставляем такими какие они были а то что нужно т.е status перезатереть
-        для этого нужно тут иметь таску исходную которую собираюсь менять - достанем ее из state */
-
-        todolistsAPI.updateTask(todolistId, taskId, model)
+        todolistsAPI.updateTask(todolistId, taskid, apiModel)
             .then((res) => {
-                // res - значит результат пришел - сервер дал подтверждение
-                // такая запись означает что переопределили переменную status на newStatus
-                dispatch(changeTaskStatusAC(taskId, newStatus, todolistId)
-                )
+                dispatch(updateTaskAC(taskid, domainModel, todolistId))
             })
     }
-// все готово - меняем статус галочки чекбокса и проверяем что отправим весь объект в Headers смотрим...
-// 2 способ - неправильный: так как на сервер отправим лишние свойства - избыточно - но работать все будет
-
-/* const model: UpdateTaskModelType = {
-    ...task,
-    status
-} */
 
 // Теперь надо также для обновления title сделать - код дублироваться будет поэтому делаем вместо
-// теперь вместо title status передадим model...
 // changeTaskStatusTC переименуем в updateTaskTC - логику смотри в task-reducer...
 
 

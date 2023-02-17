@@ -29,6 +29,7 @@ import {useDispatch, useSelector} from "react-redux";
 import {AppRootStateType} from "./state/store";
 import {TaskStatuses, TaskType, todolistsAPI} from "./api/todolists-api"
 import {changeTaskStatusTC} from "./state/tasks-reducer-1";
+import {changeTaskTitleTC} from "./state/tasks-reducer-2";
 
 
 export type TasksStateType = {
@@ -41,7 +42,6 @@ function App() {
     useEffect(() => {
         dispatch(fetchTodolistsTC())
     }, [])
-
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
@@ -56,7 +56,7 @@ function App() {
         dispatch(addTaskTC({title, todolistId}))
     }, []);
 
-    const changeStatus = useCallback(function (id: string, status: TaskStatuses, todolistId: string) {
+    const changeTaskStatus = useCallback(function (id: string, status: TaskStatuses, todolistId: string) {
         // тут теперь отправляем модельку того что надо изменить
         dispatch(updateTaskTC(id, {status: status}, todolistId))
     }, []);
@@ -114,7 +114,7 @@ function App() {
                                         removeTask={removeTask}
                                         changeFilter={changeFilter}
                                         addTask={addTask}
-                                        changeTaskStatus={changeStatus}
+                                        changeTaskStatus={changeTaskStatus}
                                         filter={tl.filter}
                                         removeTodolist={removeTodolist}
                                         changeTaskTitle={changeTaskTitle}
