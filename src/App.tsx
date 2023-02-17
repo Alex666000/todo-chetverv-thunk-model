@@ -22,7 +22,7 @@ import {
 } from "./state/todolists-reducer"
 import {addTaskTC, deleteTaskTC, updateTaskTC} from "./state/tasks-reducer";
 import {useDispatch, useSelector} from "react-redux";
-import {AppRootStateType} from "./state/store";
+import {AppRootStateType, useAppDispatch} from "./state/store";
 import {TaskStatuses, TaskType} from "./api/todolists-api"
 
 
@@ -39,7 +39,10 @@ function App() {
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
-    const dispatch = useDispatch();
+    
+    // const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
+
 
     const removeTask = useCallback(function (taskId: string, todolistId: string) {
         // передаем объект
@@ -47,6 +50,7 @@ function App() {
     }, []);
 
     const addTask = useCallback(function (title: string, todolistId: string) {
+        
         dispatch(addTaskTC({title, todolistId}))
     }, []);
 
@@ -97,8 +101,9 @@ function App() {
                 <Grid container spacing={3}>
                     {
                         todolists.map(tl => {
+                            
                             let allTodolistTasks = tasks[tl.id];
-
+                            
                             return <Grid item key={tl.id}>
                                 <Paper style={{padding: "10px"}}>
                                     <Todolist

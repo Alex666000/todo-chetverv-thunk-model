@@ -188,10 +188,10 @@ export const deleteTaskTC: any = (p: { taskId: string, todolistId: string }) => 
             })
     }
 }
-// принмаем объект
+// передаем в функцию объект и принмаем объект - тогда не страшно параметры местами перепутать
 export const addTaskTC: any = (data: { title: string, todolistId: string }) => (dispatch: Dispatch) => {
-    // ожидает апишка createTask объект - и я передаю весь объект
-    todolistsAPI.createTask(data)
+    // сразу просто объект передаем
+    todolistsAPI.createTask({data})
         .then((res) => {
             const tasks = res.data.data.item
             console.log(tasks)
@@ -293,8 +293,12 @@ export type UpdateDomainTaskModelType = {
 export const updateTaskTC: any = (taskId: string, domainModel: UpdateDomainTaskModelType, todolistId: string) =>
     (dispatch: Dispatch, getState: () => AppRootStateType) => {
         const state = getState()
+        // таски для всех тудулистов
+        const allAppTasks = state.tasks
+        // таски для конкретного тудулиста
+        const tasksForCurrentTodolist = allAppTasks[todolistId]
         // получаем таски конкретного туду и ищем в них конкретную таску - нам вернется таска и у нее можем скопировать то что надо
-        const task = state.tasks[todolistId].find(task => task.id === taskId)
+        const changedTask = state.tasks[todolistId].find(task => task.id === taskId)
         // find может таску и не найти
 
         /* const model: UpdateTaskModelType = {
@@ -319,22 +323,26 @@ export const updateTaskTC: any = (taskId: string, domainModel: UpdateDomainTaskM
          }*/
 
         // но мы так сделаем:
-        if (!task) {
+        if (!changedTask) {
             // если таска не найдена - то пользователя оповестим
             // throw new Error('task not found in the state')
             console.warn("task not found in the state")
             // оборвем...дальше не пойдем если таски нет
             return
         }
+        // короткий способ:
+        // const  model = {...changedTask, status}
+
+
         // переименуем с model на apiModel -эту модель на сервер отправлять будет
         const apiModel: UpdateTaskModelType = {
-            title: task.title,
+            title: changedTask.title,
             // статус берем тот который приходит сюда
-            status: task.status,
-            startDate: task.startDate,
-            deadline: task.deadline,
-            description: task.description,
-            priority: task.priority,
+            status: changedTask.status,
+            startDate: changedTask.startDate,
+            deadline: changedTask.deadline,
+            description: changedTask.description,
+            priority: changedTask.priority,
             // заберем все у apiModel которая нам пришла из UI - и перезатрем одно свойство а остальные деыфолтные что достали
             // getState-ом отправим
         }
@@ -354,17 +362,5 @@ export const updateTaskTC: any = (taskId: string, domainModel: UpdateDomainTaskM
             })
     }
 // теперь АС переименуем по примеру updateTaskTC - так как АС у нас разные которые меняют status title...делаем один общий АС
-
-
-
-
-
-
-
-
-
-
-
-
 
 

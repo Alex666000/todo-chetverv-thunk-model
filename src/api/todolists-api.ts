@@ -28,10 +28,10 @@ export const todolistsAPI = {
     deleteTask(todolistId: string, taskId: string) {
         return instance.delete<ResponseType>(`todo-lists/${todolistId}/tasks/${taskId}`);
     },
-    createTask(d:{todolistId: string, title: string}) {
-        return instance.post<{ title: string },
-            AxiosResponse<ResponseType<{ item: TaskType }
-                >>>(`todo-lists/${d.todolistId}/tasks`, {data: d.title});
+    createTask( data: { title: string; todolistId: string } ) {
+        
+        return instance.post<{ title: string }, AxiosResponse<ResponseType<{ item: TaskType }
+            >>>(`todo-lists/${data.todolistId}/tasks`, {data: data.title});
     },
     updateTask(todolistId: string, taskId: string, model: UpdateTaskModelType) {
         return instance.put<UpdateTaskModelType, AxiosResponse<ResponseType<{ item: TaskType }>>>(`todo-lists/${todolistId}/tasks/${taskId}`, model);
