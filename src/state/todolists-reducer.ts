@@ -1,5 +1,6 @@
 import {todolistsAPI, TodolistType} from "../api/todolists-api"
 import {Dispatch} from "redux";
+import {AppThunk} from "./store";
 // initialState
 const initialState: Array<TodolistDomainType> = [
     /*{id: todolistId1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
@@ -11,7 +12,7 @@ export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType
 }
 // reducer
-export const todolistsReducer = (state: Array<TodolistDomainType> = initialState, action: ActionsType): Array<TodolistDomainType> => {
+export const todolistsReducer = (state: Array<TodolistDomainType> = initialState, action: TodoActionsType): Array<TodolistDomainType> => {
     switch (action.type) {
         case "REMOVE-TODOLIST": {
             return state.filter(tl => tl.id !== action.id)
@@ -69,7 +70,7 @@ export const setTodolistsAC = (todolists: TodolistType[]) => {
 //------------------------------------------------------------------------------------
 // thunks - thunksCreator возвращает  функцию-санку - нужен чтобы санка
 //*********************************************************************************************
-export const fetchTodolistsTC = () => async (dispatch: Dispatch) => {
+export const fetchTodolistsTC = (): AppThunk => async (dispatch) => {
     const res = await todolistsAPI.getTodolists()
     dispatch(setTodolistsAC(res.data))
 }
@@ -109,6 +110,8 @@ export type AddTodolistActionType = ReturnType<typeof addTodolistAC>
 type ChangeTodolistTitleActionType = ReturnType<typeof changeTodolistTitleAC>
 type ChangeTodolistFilterActionType = ReturnType<typeof changeTodolistFilterAC>
 export type SetTodolistsActionType = ReturnType<typeof setTodolistsAC>
-//ActionsType
-type ActionsType = RemoveTodolistActionType | AddTodolistActionType | ChangeTodolistTitleActionType
+//ActionsType:
+
+// название полностью а не просто ActionsType
+export type TodoActionsType = RemoveTodolistActionType | AddTodolistActionType | ChangeTodolistTitleActionType
     | ChangeTodolistFilterActionType | SetTodolistsActionType

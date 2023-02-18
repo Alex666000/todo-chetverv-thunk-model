@@ -2,7 +2,7 @@ import {TasksStateType} from "../App";
 import {AddTodolistActionType, RemoveTodolistActionType, SetTodolistsActionType} from "./todolists-reducer";
 import {TaskPriorities, TaskStatuses, TaskType, todolistsAPI, UpdateTaskModelType} from "../api/todolists-api"
 import {Dispatch} from "redux";
-import {AppRootStateType} from "./store";
+import {AppThunk, RootStateType} from "./store";
 
 export type RemoveTaskActionType = {
     type: "REMOVE-TASK",
@@ -39,8 +39,8 @@ export type SetTasksActionType = {
     tasks: TaskType[]
     todolistId: string
 }
-
-type ActionsType = RemoveTaskActionType | AddTaskActionType
+// название полностью а не просто ActionsType
+export type TasksActionsType = RemoveTaskActionType | AddTaskActionType
     | UpdateTaskActionType
     | AddTodolistActionType
     | RemoveTodolistActionType
@@ -72,7 +72,7 @@ const initialState: TasksStateType = {
 
 
 // reducer
-export const tasksReducer = (state: TasksStateType = initialState, action: ActionsType): TasksStateType => {
+export const tasksReducer = (state: TasksStateType = initialState, action: TasksActionsType): TasksStateType => {
     switch (action.type) {
         case "REMOVE-TASK": {
             const stateCopy = {...state}
@@ -184,7 +184,7 @@ export const setTaksAC = (tasks: TaskType[], todolistId: string): SetTasksAction
 //         })
 // }
 
-export const fetchTasksTC = (todolistId: string) => async (dispatch: Dispatch) => {
+export const fetchTasksTC = (todolistId: string): AppThunk => async (dispatch) => {
     const res = await todolistsAPI.getTasks(todolistId)
     // таски сидят в res.data.items
     const {items} = res.data
@@ -298,7 +298,7 @@ export type UpdateDomainTaskModelType = {
 
 // переименуем с model на domainModel
 export const updateTaskTC: any = (taskId: string, domainModel: UpdateDomainTaskModelType, todolistId: string) =>
-    (dispatch: Dispatch, getState: () => AppRootStateType) => {
+    (dispatch: Dispatch, getState: () => RootStateType) => {
         const state = getState()
         // получаем таски конкретного туду и ищем в них конкретную таску - нам вернется таска и у нее можем скопировать то что надо
         const task = state.tasks[todolistId].find(task => task.id === taskId)
