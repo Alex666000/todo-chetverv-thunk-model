@@ -172,21 +172,28 @@ export const setTaksAC = (tasks: TaskType[], todolistId: string): SetTasksAction
 }
 
 // thunks - thunksCreator возвращает  функцию-санку
-export const fetchTasksTc = (todolistId: string) => (dispatch: Dispatch) => {
-    todolistsAPI.getTasks(todolistId)
-        .then((res) => {
-            // таски сидят в res.data.items
-            const {items} = res.data
-            dispatch(setTaksAC(items, todolistId))
-        })
+
+// КАК ПИСАТЬ С THEN - ОБРАЗЕЦ
+
+// export const _fetchTasksTC = (todolistId: string) => (dispatch: Dispatch) => {
+//     todolistsAPI.getTasks(todolistId)
+//         .then((res) => {
+//             // таски сидят в res.data.items
+//             const {items} = res.data
+//             dispatch(setTaksAC(items, todolistId))
+//         })
+// }
+
+export const fetchTasksTC = (todolistId: string) => async (dispatch: Dispatch) => {
+    const res = await todolistsAPI.getTasks(todolistId)
+    // таски сидят в res.data.items
+    const {items} = res.data
+    dispatch(setTaksAC(items, todolistId))
 }
-export const deleteTaskTC: any = (p: { taskId: string, todolistId: string }) => {
-    return (dispatch: Dispatch) => {
-        todolistsAPI.deleteTask(p.todolistId, p.taskId)
-            .then((res) => {
-                dispatch(removeTaskAC(p.taskId, p.todolistId))
-            })
-    }
+
+export const deleteTaskTC = (p: { taskId: string, todolistId: string }) => async (dispatch: Dispatch) => {
+    const res = await todolistsAPI.deleteTask(p.todolistId, p.taskId)
+    dispatch(removeTaskAC(p.taskId, p.todolistId))
 }
 // принмаем объект
 export const addTaskTC: any = (data: { title: string, todolistId: string }) => (dispatch: Dispatch) => {
@@ -198,7 +205,7 @@ export const addTaskTC: any = (data: { title: string, todolistId: string }) => (
             // консолем проверяем в чем сидит таска
             // для сущностей диспатчим res.data.data.item
             const newTask = res.data.data.item
-            dispatch(addTaskAC(newTask) )
+            dispatch(addTaskAC(newTask))
         })
 }
 // делаем общую санку так как код дублируется при изменении put

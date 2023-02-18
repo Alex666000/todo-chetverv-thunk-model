@@ -13,10 +13,8 @@ const rootReducer = combineReducers({
 // непосредственно создаём store
 export const store = legacy_createStore(rootReducer,applyMiddleware(thunkMiddleware));
 // определить автоматически тип всего объекта состояния
-export type AppRootStateType = ReturnType<typeof rootReducer>
-export type AppDispatch = typeof  store.dispatch
-export type DispatchType = ThunkDispatch<AppRootStateType, unknown, AnyAction>
-export const useAppDispatch = () => useDispatch<DispatchType>()
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
 
 // а это, чтобы можно было в консоли браузера обращаться к store в любой момент
 // @ts-ignore

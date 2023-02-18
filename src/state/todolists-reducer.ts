@@ -68,36 +68,40 @@ export const setTodolistsAC = (todolists: TodolistType[]) => {
 }
 //------------------------------------------------------------------------------------
 // thunks - thunksCreator возвращает  функцию-санку - нужен чтобы санка
-export const fetchTodolistsTC: any = () => {
-    // санка(совокупность множества диспатчей) принмает 2 параметра dispatch(чтобы изменять state)
-    // getState (чтобы доставать из state)
-// санка использует параметры из ТС
-    return (dispatch: Dispatch) => {
-        todolistsAPI.getTodolists()
-            .then((res) => {
-                dispatch(setTodolistsAC(res.data))
-            })
-    }
+//*********************************************************************************************
+export const fetchTodolistsTC = () => async (dispatch: Dispatch) => {
+    const res = await todolistsAPI.getTodolists()
+    dispatch(setTodolistsAC(res.data))
 }
-export const removeTodolistsTC: any = (todolistId: string) => (dispatch: Dispatch) => {
-    todolistsAPI.deleteTodolist(todolistId)
-        .then((res) => {
-            // ответ пришел значит на сервере тудулист удалился
-            dispatch(removeTodolistAC(todolistId))
-        })
+
+// КАК ПИСАТЬ С THEN - ОБРАЗЕЦ
+
+// export const _fetchTodolistsTC = () => {
+//     // санка(совокупность множества диспатчей) принмает 2 параметра dispatch(чтобы изменять state)
+//     // getState (чтобы доставать из state)
+// // санка использует параметры из ТС
+//     return (dispatch: Dispatch) => {
+//         todolistsAPI.getTodolists()
+//             .then((res) => {
+//                 dispatch(setTodolistsAC(res.data))
+//             })
+//     }
+// }
+//*********************************************************************************************
+export const removeTodolistsTC = (todolistId: string) => async (dispatch: Dispatch) => {
+    const res = await todolistsAPI.deleteTodolist(todolistId)
+    dispatch(removeTodolistAC(todolistId))
 }
-export const addTodolistsTC: any = (title: string) => (dispatch: Dispatch) => {
-    todolistsAPI.createTodolist(title)
-        .then((res) => {
-            // для сущностей диспатчим res.data.data.item
-            dispatch(addTodolistAC(res.data.data.item))
-        })
+
+export const addTodolistsTC: any = (title: string) => async (dispatch: Dispatch) => {
+    const res = await todolistsAPI.createTodolist(title)
+    // для сущностей диспатчим res.data.data.item
+    dispatch(addTodolistAC(res.data.data.item))
 }
-export const changeTodolistTitleTC: any = (id: string, title: string) => (dispatch: Dispatch) => {
-    todolistsAPI.updateTodolist(id, title)
-        .then((res) => {
-            dispatch(changeTodolistTitleAC(id, title))
-        })
+
+export const changeTodolistTitleTC = (id: string, title: string) => async (dispatch: Dispatch) => {
+    const res = await todolistsAPI.updateTodolist(id, title)
+    dispatch(changeTodolistTitleAC(id, title))
 }
 // types
 export type RemoveTodolistActionType = ReturnType<typeof removeTodolistAC>

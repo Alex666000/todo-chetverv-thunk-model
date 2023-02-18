@@ -7,9 +7,8 @@ import {Delete} from "@mui/icons-material";
 import {Task} from "./Task"
 import {TaskStatuses, TaskType} from "./api/todolists-api"
 import {FilterValuesType} from "./state/todolists-reducer"
-import {useDispatch} from "react-redux";
-import {fetchTasksTc} from "./state/tasks-reducer";
-import {useAppDispatch} from "./state/store";
+import {fetchTasksTC} from "./state/tasks-reducer";
+import {useAppDispatch} from "./hooks";
 
 type PropsType = {
     id: string
@@ -30,6 +29,7 @@ type PropsType = {
 // дернит один и тот же TC - получит одну и ту же санку но каждая санка  должна достать таски для нужного тудулиста
 export const Todolist = React.memo(function (props: PropsType) {
     console.log("Todolist called")
+    // const dispatch =  useDispatch();
     const dispatch =  useAppDispatch();
     
 
@@ -37,7 +37,7 @@ export const Todolist = React.memo(function (props: PropsType) {
     useEffect(() => {
         // дай мне таски для такого-то тудулиста
         // console.log(props.id)
-        dispatch(fetchTasksTc(props.id) as any)
+        dispatch(fetchTasksTC(props.id) as any)
     }, [props.id])
 
     const addTask = useCallback((title: string) => {
