@@ -191,12 +191,12 @@ export const fetchTasksTC = (todolistId: string): AppThunk => async (dispatch) =
     dispatch(setTaksAC(items, todolistId))
 }
 
-export const deleteTaskTC = (p: { taskId: string, todolistId: string }) => async (dispatch: Dispatch) => {
+export const deleteTaskTC = (p: { taskId: string, todolistId: string }): AppThunk => async (dispatch) => {
     const res = await todolistsAPI.deleteTask(p.todolistId, p.taskId)
     dispatch(removeTaskAC(p.taskId, p.todolistId))
 }
 // принмаем объект
-export const addTaskTC: any = (data: { title: string, todolistId: string }) => (dispatch: Dispatch) => {
+export const addTaskTC = (data: { title: string, todolistId: string }): AppThunk => (dispatch) => {
     // ожидает апишка createTask объект - и я передаю весь объект
     todolistsAPI.createTask(data)
         .then((res) => {

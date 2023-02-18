@@ -89,18 +89,18 @@ export const fetchTodolistsTC = (): AppThunk => async (dispatch) => {
 //     }
 // }
 //*********************************************************************************************
-export const removeTodolistsTC = (todolistId: string) => async (dispatch: Dispatch) => {
+export const removeTodolistsTC = (todolistId: string):AppThunk => async (dispatch) => {
     const res = await todolistsAPI.deleteTodolist(todolistId)
     dispatch(removeTodolistAC(todolistId))
 }
 
-export const addTodolistsTC: any = (title: string) => async (dispatch: Dispatch) => {
+export const addTodolistsTC: any = (title: string): AppThunk => async (dispatch) => {
     const res = await todolistsAPI.createTodolist(title)
     // для сущностей диспатчим res.data.data.item
     dispatch(addTodolistAC(res.data.data.item))
 }
 
-export const changeTodolistTitleTC = (id: string, title: string) => async (dispatch: Dispatch) => {
+export const changeTodolistTitleTC = (id: string, title: string): AppThunk => async (dispatch) => {
     const res = await todolistsAPI.updateTodolist(id, title)
     dispatch(changeTodolistTitleAC(id, title))
 }
